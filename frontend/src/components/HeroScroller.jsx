@@ -56,6 +56,8 @@ export default function HeroScroller() {
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll() // Immediately calculate initial scroll position on load
+
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -106,9 +108,10 @@ export default function HeroScroller() {
       ctx.clearRect(0, 0, displayWidth, displayHeight)
       ctx.drawImage(currentImage, 0, 0, displayWidth, displayHeight)
     }
-  }, [scrollProgress, images])
+  }, [scrollProgress, images, loadedCount]) // Included loadedCount to trigger initial draw instantly
 
-  const isReady = loadedCount >= TOTAL_FRAMES * 0.5 
+  // Lowered threshold to 35% so it renders quickly without waiting forever
+  const isReady = loadedCount >= TOTAL_FRAMES * 0.35 
 
   return (
     <div ref={containerRef} className="relative h-[250vh] bg-[#050a07]" id="home">
@@ -163,7 +166,7 @@ export default function HeroScroller() {
             pointerEvents: scrollProgress >= 0.3 && scrollProgress <= 0.75 ? 'auto' : 'none'
           }}
         >
-          {/* Increased Gap between the two cards using gap-6 sm:gap-8 */}
+          {/* Increased Gap between the two cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 w-full px-2">
             {/* Card 1 */}
             <div className="p-5 sm:p-6 rounded-2xl bg-[rgba(12,20,16,0.7)] border border-cyan-500/40 backdrop-blur-2xl shadow-2xl shadow-cyan-950/80 text-left">
